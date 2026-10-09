@@ -1,5 +1,15 @@
 # SABI-RAY changelog
 
+## 0.2.0-alpha.2 — Railway startup hotfix
+
+- Replace the application-created provider-policy startup exception with a non-blocking warning.
+- Ignore the obsolete RAILWAY_APPROVAL_CONFIRMED value; do not fabricate or record provider permission.
+- Preserve password/domain checks, existing volume/state, owner credentials and unsupported direct-profile guards.
+- Add regressions for missing/false legacy flags, automatic Railway detection, public-domain fallback and unchanged persistent state.
+- Add CI Docker simulation with Railway environment variables and a recreate test without initial password/legacy flag. This does NOT deploy to Railway.
+- Refresh the Persian/English Railway instructions: rebuild the fixed code, not the old image, and keep the volume. Provider terms still apply.
+
+
 ## 0.2.0-alpha.1
 
 - Optional automatic REALITY/Vision (TCP 11443) and Shadowsocks AEAD TCP (11444) for new Docker/VPS installations.

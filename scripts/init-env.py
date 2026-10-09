@@ -14,7 +14,7 @@ def main():
     if any(c in password for c in "'\"\r\n\x00"):
         raise ValueError('For this local env-file helper, use no quotes or line breaks in the password')
     if password!=getpass.getpass('Repeat password: '):raise ValueError('Passwords do not match')
-    content=f"PUBLIC_DOMAIN={host}\nSABI_ADMIN_USER={username}\nSABI_INITIAL_PASSWORD='{password}'\nSABI_PROFILES=vless-ws,trojan-ws,vmess-ws\nSABI_CONTROL_ONLY=false\nSABI_ADVANCED=\nDEPLOY_MODE=docker\nPORT=8080\nRAILWAY_APPROVAL_CONFIRMED=false\n"
+    content=f"PUBLIC_DOMAIN={host}\nSABI_ADMIN_USER={username}\nSABI_INITIAL_PASSWORD='{password}'\nSABI_PROFILES=vless-ws,trojan-ws,vmess-ws\nSABI_CONTROL_ONLY=false\nSABI_ADVANCED=\nDEPLOY_MODE=docker\nPORT=8080\n"
     fd=os.open(output,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
     with os.fdopen(fd,'w') as f:f.write(content)
     print('Created private .env (0600). Save your password securely; no password was printed. Read docs/fa/02-vps-install.md.')

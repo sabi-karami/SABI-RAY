@@ -28,7 +28,7 @@ python3 --version
 ```sh
 git clone https://github.com/sabi-karami/SABI-RAY.git
 cd SABI-RAY
-git checkout v0.2.0-alpha.1
+git checkout v0.2.0-alpha.2
 ```
 
 در زمان توسعه اگر tag هنوز منتشر نشده، از آخرین نسخهٔ منتشرشده در Releases استفاده کن؛ نصب از main ممکن است بین تغییرات آزمایشی قرار بگیرد.

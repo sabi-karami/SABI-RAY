@@ -48,3 +48,7 @@ docker compose -f compose.yaml -f compose.vps.yaml exec -T panel python -m sabi_
 - رمز اولیه قبل از ساخت دیتابیس/کاربر با قواعد واقعی پایه بررسی می‌شود.
 
 جزئیات و مرز تست‌ها در [گزارش انتشار](../BUILD-REPORT.md) ثبت شده‌اند.
+
+## خطای Startup stopped دربارهٔ مقررات Railway
+
+در نسخه‌های پیش از 0.2.0-alpha.2، شرط داخلی برنامه بدون متغیر تأییدیه exit می‌کرد. این رفتار به هشدار غیرمسدودکننده تبدیل شده است؛ به معنی تأیید مقررات از طرف Railway نیست. سورس نسخهٔ اصلاح‌شده را rebuild/deploy کن، نه اینکه فقط image قدیمی را restart کنی. `RAILWAY_APPROVAL_CONFIRMED=true` دیگر لازم نیست و داده/Volume را نباید پاک کرد. [راهنمای دقیق](10-railway.md).
