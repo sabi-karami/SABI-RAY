@@ -38,10 +38,16 @@ def domain(value: str) -> str:
     raise ValueError('PUBLIC_DOMAIN must be a DNS name for TLS, not an IP')
 
 def validate_secret(value: str) -> str:
-    if len(value) < 16: raise ValueError('Initial password must contain at least 16 characters')
-    if not all((re.search(r'[A-Z]',value), re.search(r'[a-z]',value), re.search(r'\d',value), re.search(r'[^A-Za-z0-9]',value))):
-        raise ValueError('Initial password needs upper/lower case, a digit and a symbol')
+    if len(value) < 16 or len(value.encode('utf-8')) > 72:
+        raise ValueError('Initial password needs at least 16 characters and at most 72 UTF-8 bytes')
+    if any(c in value for c in ['"', '\r', '\n', '\x00']):
+        raise ValueError('Password cannot contain double quotes, line breaks or null bytes')
+    if any(len(re.findall(pattern,value)) < 2 for pattern in (r'[A-Z]',r'[a-z]',r'\d')):
+        raise ValueError('Password needs at least two uppercase, two lowercase letters and two digits')
+    if not re.search(r'[!@#$%^&*()\-_=+\[\]{}|;:,.<>?/~`]',value):
+        raise ValueError('Password needs an accepted special character')
     return value
+
 
 def selected(keys: str):
     requested=[k.strip() for k in keys.split(',') if k.strip()]

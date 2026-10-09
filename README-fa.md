@@ -18,7 +18,7 @@ cd SABI-RAY
 cp .env.sabi.example .env
 ```
 
-فایل `.env` را خصوصی ویرایش کن: `PUBLIC_DOMAIN` بدون https و مسیر؛ `SABI_INITIAL_PASSWORD` رمز یکتای حداقل ۱۶ کاراکتری شامل حروف بزرگ/کوچک، عدد و نماد. هیچ رمز ثابت آماده‌ای وجود ندارد.
+فایل `.env` را خصوصی ویرایش کن: `PUBLIC_DOMAIN` بدون https و مسیر؛ `SABI_INITIAL_PASSWORD` رمز یکتای حداقل ۱۶ کاراکتری و حداکثر ۷۲ بایت، شامل دو حرف بزرگ، دو حرف کوچک، دو رقم و یک نماد. هیچ رمز ثابت آماده‌ای وجود ندارد.
 
 ```sh
 docker compose -f compose.yaml -f compose.vps.yaml up -d --build

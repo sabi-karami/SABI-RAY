@@ -41,7 +41,10 @@ class ProfilesTests(unittest.TestCase):
     def test_weak_passwords(self):
         for value in ['admin','A'*30,'lowercasepassword1234','Uppercasepassword1234']:
             with self.subTest(value=value),self.assertRaises(ValueError):validate_secret(value)
-    def test_password_policy(self):self.assertTrue(validate_secret('Example-test-only-9Ab!'))
+    def test_password_policy(self):self.assertTrue(validate_secret('Example-Test-only-99Ab!'))
+    def test_base_password_policy(self):
+        for value in ['Example-test-only-9Ab!', 'EXample-Only-11!'+('x'*80), 'EXample-Only-11!"']:
+            with self.subTest(value=value),self.assertRaises(ValueError):validate_secret(value)
     def test_health_not_static(self):self.assertIn('proxy_pass http://127.0.0.1:8001/healthz',nginx_config(PROFILES,self.identifier))
     def test_dynamic_port(self):self.assertIn('listen 8999;',nginx_config(PROFILES,self.identifier,8999))
     def test_port_injection(self):

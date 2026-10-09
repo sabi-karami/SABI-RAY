@@ -51,6 +51,24 @@ chmod -R go-rwx "backups/volume-$STAMP"
 ۵. راه‌اندازی، ورود، تعداد کاربران، سهمیه و پایداری کلیدهای اتصال را بررسی کن.
 ۶. فقط وقتی تمرین موفق است، سناریوی بازگشت عملیاتی را مستند کن.
 
+### نمونهٔ ساخت مقصد بازیابی بدون overwrite روی production
+
+فقط روی میزبان آزمایشیِ جدا و ایزوله، از ریشهٔ release متناظر بکاپ:
+
+```sh
+# .env خصوصی همان نصب و image متناظر را از قبل آماده کن.
+# SOURCE را به پوشهٔ کامل بکاپی که خودت بررسی کردی تغییر بده.
+SOURCE=/secure-backups/volume-YYYYMMDDTHHMMSSZ
+[ -f "$SOURCE/db.sqlite3" ] || exit 1
+[ -f "$SOURCE/sabi-installation.json" ] || exit 1
+docker compose -p sabi-restore-check -f compose.yaml create panel
+RESTORE_CID=$(docker compose -p sabi-restore-check -f compose.yaml ps -a -q panel)
+[ -n "$RESTORE_CID" ] || exit 1
+docker cp "$SOURCE/." "$RESTORE_CID:/var/lib/pasarguard/"
+```
+
+این دستور فقط مقصد **تازه**ٔ پروژهٔ sabi-restore-check را آماده می‌کند؛ اگر آن پروژه قبلاً داده دارد، توقف کن و مقصد جدید انتخاب کن. هیچ start خودکار در مثال نیست. قبل از start، شبکهٔ ایزوله و جلوگیری از اتصال به نودهای production را خودت برقرار کن. برای نصب خارجی با PostgreSQL این مثال معتبر نیست؛ dump/restore همان دیتابیس لازم است. تست داخل محیط ایزوله با همان مشخصات domain/state انجام شود و نتیجهٔ شمارش کاربران و ورود ثبت شود.
+
 این فصل یک runbook است، نه ادعای انجام تمرین بازیابی روی سرور تو.
 
 ## ارتقا

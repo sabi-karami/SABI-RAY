@@ -15,8 +15,14 @@ configs=[('reality',{'protocol':'vless','settings':{'vnext':[{'address':'127.0.0
 results=[]
 for name,outbound in configs:
     config={'log':{'loglevel':'none'},'inbounds':[{'listen':'127.0.0.1','port':18082,'protocol':'http','settings':{}}],'outbounds':[outbound]}
-    fd,path=tempfile.mkstemp();os.fchmod(fd,0o600)
+    fd,path=tempfile.mkstemp(suffix=".json");os.fchmod(fd,0o600)
     with os.fdopen(fd,'w') as f:json.dump(config,f)
+    check=subprocess.run(['/usr/local/bin/xray','run','-test','-config',path],capture_output=True,text=True)
+    if check.returncode:
+        message=(check.stdout+check.stderr)[-1200:]
+        import re
+        for item in [keys['private_key'],keys['public_key'],keys['short_id'],proxies['vless']['id'],proxies['shadowsocks']['password']]:message=message.replace(item,'[REDACTED]')
+        print('Client config validation:',name,message,file=sys.stderr)
     p=subprocess.Popen(['/usr/local/bin/xray','run','-config',path],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     ok=False
     try:
@@ -39,5 +45,7 @@ def run_direct(container,user):
     res=subprocess.run(['docker','exec','-i',container,'python','-c',SCRIPT],input=json.dumps({'proxy_settings':user['proxy_settings']}),capture_output=True,text=True,timeout=400)
     try:print('Direct profile results:',json.loads(res.stdout))
     except Exception:print('Direct profile test produced no structured result')
-    if res.returncode:raise RuntimeError('Direct profile transfer failed')
+    if res.returncode:
+        print(res.stderr[-1500:])
+        raise RuntimeError('Direct profile transfer failed')
     print('PASS: REALITY/Vision and Shadowsocks TCP actual data transfer; locally controlled REALITY TLS target.')
