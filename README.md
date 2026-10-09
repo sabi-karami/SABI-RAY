@@ -4,7 +4,9 @@
 
 **Persian-friendly multi-protocol management console. A branded, security-focused PasarGuard distribution.**
 
-**Status: 0.1.0-alpha.1 — development preview, NOT production certified.**
+**Status: 0.1.0-alpha.1 — tested development preview, NOT production certified.**
+
+[Verified test report](docs/BUILD-REPORT.md) · [Successful CI run](https://github.com/sabi-karami/SABI-RAY/actions/runs/37939392617)
 
 Contact: [@SAHEBKARAMI](https://t.me/SAHEBKARAMI) · [راهنمای فارسی](README-fa.md) · [Source / notices](NOTICE.md)
 
