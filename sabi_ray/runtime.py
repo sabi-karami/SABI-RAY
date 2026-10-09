@@ -13,6 +13,7 @@ import urllib.parse
 import urllib.request
 import uuid
 from .profiles import domain, selected, core_config, host_config, nginx_config, validate_secret
+from . import advanced
 
 DATA = pathlib.Path(os.getenv('SABI_DATA_DIR','/var/lib/pasarguard'))
 BASE = 'http://127.0.0.1:8000'
@@ -85,21 +86,26 @@ asyncio.run(main())
         must('POST','/api/setup/owner',{'key':owner['key'],'username':user,'password':password})
     token=must('POST','/api/admin/token',{'username':user,'password':password},form=True)['access_token']
     if not state['control_only']:
-        core=existing_or_create('/api/cores','cores','SABI-RAY Core','/api/core',{'name':'SABI-RAY Core','config':core_config(profiles,state['installation_id']),'exclude_inbound_tags':[],'fallbacks_inbound_tags':[]},token)
+        config=core_config(profiles,state['installation_id'])
+        direct=state.get('advanced',{})
+        keys=advanced.ensure_keys(DATA) if 'reality' in direct.get('enabled',[]) else None
+        extra=advanced.inbounds(direct,keys)
+        config['inbounds'].extend(extra)
+        core=existing_or_create('/api/cores','cores','SABI-RAY Core','/api/core',{'name':'SABI-RAY Core','config':config,'exclude_inbound_tags':[],'fallbacks_inbound_tags':[]},token)
         node_body={'name':'SABI-RAY Local','address':'127.0.0.1','port':62050,'usage_coefficient':1,'connection_type':'grpc','server_ca':(DATA/'sabi-node/cert.pem').read_text(),'keep_alive':30,'core_config_id':core['id'],'api_key':(DATA/'sabi-node/api-key').read_text().strip()}
         existing_or_create('/api/nodes','nodes','SABI-RAY Local','/api/node',node_body,token)
         group=None
         for attempt in range(30):
             try:
-                group=existing_or_create('/api/groups','groups','sabi-ray-all','/api/group',{'name':'sabi-ray-all','inbound_tags':['SR-'+p.key.upper() for p in profiles]},token)
+                group=existing_or_create('/api/groups','groups','sabi-ray-all','/api/group',{'name':'sabi-ray-all','inbound_tags':['SR-'+p.key.upper() for p in profiles]+[i['tag'] for i in extra]},token)
                 break
             except RuntimeError:
                 if attempt==29:raise
                 time.sleep(2)
         hosts=must('GET','/api/hosts',token=token)
         hosts=hosts if isinstance(hosts,list) else hosts.get('hosts',[])
-        for number,p in enumerate(profiles,1):
-            body=host_config(p,state['domain'],state['installation_id'],number)
+        bodies=[host_config(p,state['domain'],state['installation_id'],number) for number,p in enumerate(profiles,1)]+advanced.hosts(direct)
+        for body in bodies:
             existing=[h for h in hosts if h.get('inbound_tag')==body['inbound_tag']]
             # Setup-only update configures upstream automatically created host records; no deletion.
             if existing:
@@ -126,14 +132,15 @@ def preflight():
     profiles=selected(os.getenv('SABI_PROFILES','vless-ws,trojan-ws,vmess-ws'))
     control=os.getenv('SABI_CONTROL_ONLY','false')=='true'
     path=DATA/'sabi-installation.json'
+    direct=advanced.options(os.environ,control)
     expected={'domain':host,'profiles':[p.key for p in profiles],'control_only':control}
     if path.exists():
         state=json.loads(path.read_text())
-        if any(state.get(k)!=v for k,v in expected.items()):
+        if state.get('advanced',{})!=direct or any(state.get(k)!=v for k,v in expected.items()):
             raise ValueError('Deployment settings changed. Back up data and follow docs/MIGRATION.md; refusing silent rewrite.')
     else:
         validate_secret(os.environ.get('SABI_INITIAL_PASSWORD',''))
-        state={**expected,'installation_id':secrets.token_hex(16),'version':1}
+        state={**expected,'advanced':direct,'installation_id':secrets.token_hex(16),'version':2}
         atomic_json(path,state)
     return state,profiles
 

@@ -1,0 +1,6 @@
+# Enable only for a NEW Docker/VPS installation configured with SABI_ADVANCED.
+services:
+  panel:
+    ports:
+      - "11443:11443/tcp"
+      - "11444:11444/tcp"

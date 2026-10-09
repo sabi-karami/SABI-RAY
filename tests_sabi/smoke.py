@@ -23,8 +23,11 @@ def wait_ready():
     raise RuntimeError('Readiness did not become healthy')
 
 try:
+    docker('network','create','sabi-test-net',stdout=subprocess.DEVNULL)
+    docker('run','-d','--name','sabi-tls-origin','--network','sabi-test-net','--network-alias','origin.example.test','--entrypoint','bash','sabi-ray:test','-c',
+        'openssl req -x509 -newkey rsa:2048 -nodes -keyout /tmp/key.pem -out /tmp/cert.pem -days 1 -subj /CN=origin.example.test >/dev/null 2>&1 && exec openssl s_server -accept 8443 -cert /tmp/cert.pem -key /tmp/key.pem -tls1_3 -alpn h2,http/1.1 -www -quiet',stdout=subprocess.DEVNULL)
     env=os.environ.copy();env['SABI_INITIAL_PASSWORD']=password
-    docker('run','-d','--name',container,'-p','127.0.0.1:18080:8080','-e','PUBLIC_DOMAIN=panel.example.test','-e','SABI_ADMIN_USER=owner','-e','SABI_INITIAL_PASSWORD','-e','SABI_PROFILES=vless-ws,trojan-ws,vmess-ws,vless-upgrade,vless-xhttp','sabi-ray:test',env=env,stdout=subprocess.DEVNULL)
+    docker('run','-d','--name',container,'--network','sabi-test-net','-e','SABI_ADVANCED=reality,shadowsocks','-e','SABI_DIRECT_DOMAIN=direct.example.test','-e','SABI_REALITY_TARGET=origin.example.test:8443','-p','127.0.0.1:18080:8080','-e','PUBLIC_DOMAIN=panel.example.test','-e','SABI_ADMIN_USER=owner','-e','SABI_INITIAL_PASSWORD','-e','SABI_PROFILES=vless-ws,trojan-ws,vmess-ws,vless-upgrade,vless-xhttp','sabi-ray:test',env=env,stdout=subprocess.DEVNULL)
     wait_ready()
     assert b'SABI-RAY' in req('GET','/dashboard/')
     token=req('POST','/api/admin/token',{'username':'owner','password':password},form=True)['access_token']
@@ -34,9 +37,15 @@ try:
     assert user['username']=='sabi_ci_user'
     subpath=urllib.parse.urlsplit(user['subscription_url']).path
     assert subpath.startswith('/sub/')
+    raw=req('GET',subpath+'/raw')
+    text=raw.decode() if isinstance(raw,bytes) else str(raw)
+    assert 'reality' in text.lower() and 'ss://' in text
+
     assert req('GET',subpath)
     from transports import run_transport_tests
     run_transport_tests(container,user)
+    from direct import run_direct
+    run_direct(container,user)
     docker('restart',container,stdout=subprocess.DEVNULL)
     wait_ready()
     token=req('POST','/api/admin/token',{'username':'owner','password':password},form=True)['access_token']
@@ -59,4 +68,6 @@ except Exception as error:
     output=re.sub(r'(?i)(bearer|apikey)\s+[^\s]+',r'\1 [REDACTED]',output)
     print(output)
     raise SystemExit(1)
-finally:subprocess.run(['docker','rm','-f',container],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+finally:
+    subprocess.run(['docker','rm','-f',container,'sabi-tls-origin'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    subprocess.run(['docker','network','rm','sabi-test-net'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)

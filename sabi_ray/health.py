@@ -2,6 +2,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json,os,pathlib,socket,urllib.request,urllib.error
 from .profiles import selected
+from .advanced import listener_ports
 
 def ready():
     data=pathlib.Path(os.getenv('SABI_DATA_DIR','/var/lib/pasarguard'))
@@ -12,7 +13,7 @@ def ready():
             with urllib.request.urlopen('http://127.0.0.1:8000/api/system',timeout=1) as r:code=r.status
         except urllib.error.HTTPError as e:code=e.code
         if code not in (200,401,403):return False
-        ports=[] if state['control_only'] else [62050]+[p.port for p in selected(','.join(state['profiles']))]
+        ports=[] if state['control_only'] else [62050]+[p.port for p in selected(','.join(state['profiles']))]+listener_ports(state.get('advanced',{}))
         for port in ports:
             with socket.create_connection(('127.0.0.1',port),timeout=.3):pass
         return True
