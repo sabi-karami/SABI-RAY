@@ -9,6 +9,11 @@ class RuntimeTests(unittest.TestCase):
         self.env=patch.dict(os.environ,{'PUBLIC_DOMAIN':'panel.example.com','DEPLOY_MODE':'docker','SABI_PROFILES':'vless-ws,trojan-ws','SABI_INITIAL_PASSWORD':'Temporary-Test-Only-123!'},clear=True)
         self.env.start();self.data=patch.object(runtime,'DATA',self.path);self.data.start()
     def tearDown(self):self.data.stop();self.env.stop();self.tmp.cleanup()
+    def test_wait_node_registration(self):
+        with patch.object(runtime,'must',side_effect=[{'status':'connecting'},{'status':'connected'}]) as call,patch.object(runtime.time,'sleep'):
+            runtime.wait_node_connected(1,'synthetic-token');self.assertEqual(call.call_count,2)
+    def test_wait_node_timeout(self):
+        with self.assertRaises(TimeoutError):runtime.wait_node_connected(1,'synthetic-token',timeout=0)
     def test_first_install_state(self):
         s,_=runtime.preflight();self.assertEqual(len(s['installation_id']),32)
     def test_stable_id(self):

@@ -59,6 +59,15 @@ def existing_or_create(list_path,key,name,create_path,body,token):
     return existing or must('POST',create_path,body,token)
 
 
+def wait_node_connected(node_id,token,timeout=120):
+    deadline=time.monotonic()+timeout
+    while time.monotonic()<deadline:
+        node=must('GET','/api/node/'+str(node_id),token=token)
+        if node.get('status')=='connected':return
+        time.sleep(1)
+    raise TimeoutError('Node did not finish control-plane registration; refusing early readiness')
+
+
 def setup(state,profiles):
     if (DATA/'sabi-ready.json').exists():
         return  # Never reset passwords or overwrite managed core settings on restart.
@@ -93,7 +102,8 @@ asyncio.run(main())
         config['inbounds'].extend(extra)
         core=existing_or_create('/api/cores','cores','SABI-RAY Core','/api/core',{'name':'SABI-RAY Core','config':config,'exclude_inbound_tags':[],'fallbacks_inbound_tags':[]},token)
         node_body={'name':'SABI-RAY Local','address':'127.0.0.1','port':62050,'usage_coefficient':1,'connection_type':'grpc','server_ca':(DATA/'sabi-node/cert.pem').read_text(),'keep_alive':30,'core_config_id':core['id'],'api_key':(DATA/'sabi-node/api-key').read_text().strip()}
-        existing_or_create('/api/nodes','nodes','SABI-RAY Local','/api/node',node_body,token)
+        node=existing_or_create('/api/nodes','nodes','SABI-RAY Local','/api/node',node_body,token)
+        wait_node_connected(node['id'],token)
         group=None
         for attempt in range(30):
             try:
