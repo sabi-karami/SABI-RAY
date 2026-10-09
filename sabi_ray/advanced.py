@@ -69,7 +69,7 @@ def hosts(config):
     result=[]
     for index,name in enumerate(config.get('enabled',[]),101):
         common={'address':[config['address']],'port':PORTS[name],'priority':index,'is_disabled':False,'allowinsecure':False}
-        if name=='reality':common.update(remark='SABI-RAY | VLESS REALITY Vision',inbound_tag='SR-VLESS-REALITY',security='reality',sni=[config['server_name']],fingerprint='chrome')
+        if name=='reality':common.update(remark='SABI-RAY | VLESS REALITY Vision',inbound_tag='SR-VLESS-REALITY',security='inbound_default',sni=[config['server_name']],fingerprint='chrome')
         else:common.update(remark='SABI-RAY | Shadowsocks TCP',inbound_tag='SR-SHADOWSOCKS',security='none')
         result.append(common)
     return result

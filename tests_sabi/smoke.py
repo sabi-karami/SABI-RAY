@@ -16,6 +16,8 @@ def req(method,path,body=None,token=None,form=False):
 
 def wait_ready():
     for i in range(180):
+        inspect=subprocess.run(['docker','inspect','--format','{{.State.Running}}',container],capture_output=True,text=True)
+        if inspect.returncode or inspect.stdout.strip()!='true':raise RuntimeError('Container stopped before readiness')
         try:
             if req('GET','/healthz')['status']=='ready':return
         except Exception:pass
@@ -46,6 +48,8 @@ try:
     run_transport_tests(container,user)
     from direct import run_direct
     run_direct(container,user)
+    from rbac import run_rbac
+    run_rbac(req,token,gid)
     docker('restart',container,stdout=subprocess.DEVNULL)
     wait_ready()
     token=req('POST','/api/admin/token',{'username':'owner','password':password},form=True)['access_token']
@@ -55,8 +59,8 @@ try:
     assert settings['subscription']['support_url']=='https://t.me/SAHEBKARAMI'
     from browser import run_browser
     run_browser('http://127.0.0.1:18080','owner',password)
-    print('PASS: branded dashboard, readiness including 5 listeners, owner login, core/group, user/subscription, persisted restart.')
-    print('NOT TESTED: external TLS edge, real ISP latency, advanced UDP/direct-TCP profiles.')
+    print('PASS: branded dashboard, readiness including web and direct listeners, owner login, core/group, user/subscription, persisted restart.')
+    print('NOT TESTED: external TLS edge, real ISP latency, Hysteria2/WireGuard and production traffic.')
 except Exception as error:
     # Error strings may include a subscription URL. Do not print request errors verbatim.
     print('Integration test failed:',type(error).__name__)

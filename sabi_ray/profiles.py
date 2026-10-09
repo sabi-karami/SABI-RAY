@@ -21,8 +21,8 @@ PROFILES = (
 CATALOG = [
     {'name': p.title, 'protocol': p.protocol, 'transport': p.transport, 'integration': 'automatic', 'status': 'alpha: client/server integration testing required'} for p in PROFILES
 ] + [
-    {'name': 'VLESS · REALITY · Vision', 'protocol': 'vless', 'transport': 'raw', 'integration': 'explicit template', 'requires': 'Direct TCP, authorized target, generated X25519 keys, compatible client', 'status': 'not automatically enabled'},
-    {'name': 'Shadowsocks', 'protocol': 'shadowsocks', 'transport': 'tcp/udp', 'integration': 'upstream core editor', 'requires': 'Explicit cipher/user management and exposed ports', 'status': 'not automatically enabled'},
+    {'name': 'VLESS · REALITY · Vision', 'protocol': 'vless', 'transport': 'raw', 'integration': 'opt-in direct', 'requires': 'New VPS/Docker install; TCP 11443, authorized TLS target, compatible client', 'status': 'available via SABI_ADVANCED=reality; disabled by default'},
+    {'name': 'Shadowsocks · TCP', 'protocol': 'shadowsocks', 'transport': 'tcp', 'integration': 'opt-in direct', 'requires': 'New VPS/Docker install, direct TCP 11444; not SS2022/UDP', 'status': 'available via SABI_ADVANCED=shadowsocks; disabled by default'},
     {'name': 'Hysteria2', 'protocol': 'hysteria2', 'transport': 'quic/udp', 'integration': 'upstream core editor', 'requires': 'Compatible node/core version, public UDP and TLS certificate', 'status': 'not automatically enabled'},
     {'name': 'WireGuard', 'protocol': 'wireguard', 'transport': 'udp', 'integration': 'upstream WireGuard node', 'requires': 'Separate capable node, public UDP, privileges/TUN as required', 'status': 'not automatically enabled'},
 ]

@@ -1,3 +1,13 @@
+# Build report — SABI-RAY 0.2.0-alpha.1 (verification in progress)
+
+This revision adds opt-in REALITY/Vision and Shadowsocks TCP, local key generation, a 16-chapter Persian handbook, setup helper and sanitized diagnostics.
+
+The first advanced-profile integration run exposed an API compatibility error: REALITY hosts must use `inbound_default`, not a nonexistent `reality` host enum. This was corrected with a regression test. The next CI run must pass before tagging the new release.
+
+The previous 0.1.0-alpha.1 test record below remains historical evidence only, not proof of the new features.
+
+---
+
 # Verified build report — SABI-RAY 0.1.0-alpha.1
 
 Tested application commit: `41fd65d3b322aa129d3abfdb8048aafda9b730d9`.

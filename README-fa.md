@@ -1,6 +1,8 @@
 # SABI-RAY
 
-**نسخهٔ آزمایشی 0.1.0-alpha.1 — هنوز نسخهٔ پایدار یا تأییدشده برای مصرف عملیاتی نیست.**
+**نسخهٔ آزمایشی 0.2.0-alpha.1 — هنوز نسخهٔ پایدار یا تأییدشده برای مصرف عملیاتی نیست.**
+
+**[مرکز آموزش کامل فارسی — از نصب تا عیب‌یابی، ۱۶ فصل](docs/fa/README.md)**
 
 پشتیبانی: [@SAHEBKARAMI](https://t.me/SAHEBKARAMI)
 
@@ -28,7 +30,7 @@ docker compose -f compose.yaml -f compose.vps.yaml up -d --build
 
 ## پروتکل‌ها
 
-پیش‌فرض: VLESS/WS، Trojan/WS و VMess/WS. HTTPUpgrade و XHTTP گزینه‌های آزمایشی نصب اولیه‌اند. قابلیت‌های REALITY، Hysteria2، WireGuard و Shadowsocks پایه حفظ شده‌اند، اما نود، پورت و تنظیمات مناسب خودشان را لازم دارند و در این نسخه خودکار فعال نمی‌شوند. [جدول دقیق](docs/PROTOCOLS.md)
+پیش‌فرض: VLESS/WS، Trojan/WS و VMess/WS. HTTPUpgrade و XHTTP گزینه‌های آزمایشی نصب اولیه‌اند. راه‌اندازی اختیاری REALITY/Vision و Shadowsocks TCP برای نصب جدید VPS/Docker اضافه شده؛ [آموزش تنظیم مستقیم](docs/fa/07-direct-protocols.md). Hysteria2 و WireGuard هنوز نود و تنظیم صریح جدا لازم دارند. [جدول دقیق](docs/PROTOCOLS.md)
 
 ## Railway
 

@@ -37,6 +37,7 @@ class AdvancedTests(unittest.TestCase):
         self.assertEqual(advanced.inbounds(config,keys)[1]['settings']['network'],'tcp')
     def test_host_ports(self):self.assertEqual([h['port'] for h in advanced.hosts(advanced.options(self.env()))],[11443,11444])
     def test_never_skip_certificate(self):self.assertTrue(all(not h['allowinsecure'] for h in advanced.hosts(advanced.options(self.env()))))
+    def test_reality_host_inherits_security(self):self.assertEqual(advanced.hosts(advanced.options(self.env()))[0]['security'],'inbound_default')
     def test_listener_ports(self):self.assertEqual(advanced.listener_ports(advanced.options(self.env())),[11443,11444])
     def test_key_store_reject_corruption(self):
         with tempfile.TemporaryDirectory() as d:

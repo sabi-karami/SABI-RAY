@@ -4,22 +4,26 @@
 
 **Persian-friendly multi-protocol management console. A branded, security-focused PasarGuard distribution.**
 
-**Status: 0.1.0-alpha.1 — tested development preview, NOT production certified.**
+**Status: 0.2.0-alpha.1 — tested development preview, NOT production certified.**
 
 [Verified test report](docs/BUILD-REPORT.md) · [Successful CI run](https://github.com/sabi-karami/SABI-RAY/actions/runs/37939392617)
 
-Contact: [@SAHEBKARAMI](https://t.me/SAHEBKARAMI) · [راهنمای فارسی](README-fa.md) · [Source / notices](NOTICE.md)
+**[آموزش کامل فارسی — ۱۶ فصل](docs/fa/README.md)** · [Quick start](docs/fa/02-vps-install.md)
+
+Contact: [@SAHEBKARAMI](https://t.me/SAHEBKARAMI) · [راهنمای فارسی](docs/fa/README.md) · [Source / notices](NOTICE.md)
 
 ## What is included
 
 - Real React dashboard branding, localized product names, original logo/favicon/PWA identity, subscription branding and support links.
 - Existing PasarGuard users, reseller RBAC, quotas, expiry, traffic reports, API keys, templates, subscription formats, Telegram integration and multi-node management retained from upstream.
 - Automatic VLESS/WS, Trojan/WS and VMess/WS provisioning; optional HTTPUpgrade and XHTTP alpha presets.
+- Opt-in REALITY/Vision and Shadowsocks TCP, local key generation, explicit direct port mapping.
+- Interactive private env-file setup and sanitized read-only doctor command.
 - Secure first owner initialization via the upstream validated setup API. No `admin/admin`, no sample reseller and no password overwrite on restart.
 - Fail-closed setup, process supervision, listener-aware readiness, persistent randomized paths, pinned panel/node images, secret-safe logs and a consistent SQLite backup command.
 - Docker, VPS with Caddy TLS, and a policy-gated Railway packaging path.
 
-This is not “hundreds of newly implemented features”. Many advanced capabilities are inherited from PasarGuard. Hysteria2/WireGuard/REALITY/Shadowsocks remain explicit upstream/node configuration, not pretend-enabled buttons. See [protocol matrix](docs/PROTOCOLS.md).
+This is not “hundreds of newly implemented features”. Many advanced capabilities are inherited from PasarGuard. Optional direct VLESS/REALITY/Vision and Shadowsocks TCP provisioning is now available for NEW Docker/VPS installations. Hysteria2/WireGuard still require explicit compatible nodes. See [protocol matrix](docs/PROTOCOLS.md).
 
 ## New installation on an authorized VPS
 

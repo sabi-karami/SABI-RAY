@@ -38,17 +38,17 @@
     "name": "VLESS · REALITY · Vision",
     "protocol": "vless",
     "transport": "raw",
-    "integration": "explicit template",
-    "requires": "Direct TCP, authorized target, generated X25519 keys, compatible client",
-    "status": "not automatically enabled"
+    "integration": "opt-in direct",
+    "requires": "New VPS/Docker install; TCP 11443, authorized TLS target, compatible client",
+    "status": "available via SABI_ADVANCED=reality; disabled by default"
   },
   {
-    "name": "Shadowsocks",
+    "name": "Shadowsocks · TCP",
     "protocol": "shadowsocks",
-    "transport": "tcp/udp",
-    "integration": "upstream core editor",
-    "requires": "Explicit cipher/user management and exposed ports",
-    "status": "not automatically enabled"
+    "transport": "tcp",
+    "integration": "opt-in direct",
+    "requires": "New VPS/Docker install, direct TCP 11444; not SS2022/UDP",
+    "status": "available via SABI_ADVANCED=shadowsocks; disabled by default"
   },
   {
     "name": "Hysteria2",
