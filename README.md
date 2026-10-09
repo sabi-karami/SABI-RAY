@@ -4,7 +4,7 @@
 
 **Persian-friendly multi-protocol management console. A branded, security-focused PasarGuard distribution.**
 
-**Status: 0.2.0-alpha.1 — tested development preview, NOT production certified.**
+**Status: 0.2.0-alpha.2 — tested development preview, NOT production certified.**
 
 [Verified test report](docs/BUILD-REPORT.md) · [Successful CI run](https://github.com/sabi-karami/SABI-RAY/actions/runs/37942936496)
 
@@ -21,7 +21,7 @@ Contact: [@SAHEBKARAMI](https://t.me/SAHEBKARAMI) · [راهنمای فارسی]
 - Interactive private env-file setup and sanitized read-only doctor command.
 - Secure first owner initialization via the upstream validated setup API. No `admin/admin`, no sample reseller and no password overwrite on restart.
 - Fail-closed setup, process supervision, listener-aware readiness, persistent randomized paths, pinned panel/node images, secret-safe logs and a consistent SQLite backup command.
-- Docker, VPS with Caddy TLS, and a policy-gated Railway packaging path.
+- Docker, VPS with Caddy TLS, and Railway packaging with a non-blocking provider-policy warning. No fabricated approval flag is required.
 
 This is not “hundreds of newly implemented features”. Many advanced capabilities are inherited from PasarGuard. Optional direct VLESS/REALITY/Vision and Shadowsocks TCP provisioning is now available for NEW Docker/VPS installations. Hysteria2/WireGuard still require explicit compatible nodes. See [protocol matrix](docs/PROTOCOLS.md).
 

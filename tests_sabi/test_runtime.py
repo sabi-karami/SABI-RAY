@@ -1,4 +1,4 @@
-import json,os,pathlib,sqlite3,tempfile,unittest
+import io,json,os,pathlib,sqlite3,tempfile,unittest
 from unittest.mock import patch
 from sabi_ray import runtime,health
 from sabi_ray.backup import backup
@@ -28,12 +28,54 @@ class RuntimeTests(unittest.TestCase):
     def test_refuse_silent_profile_change(self):
         runtime.preflight();os.environ['SABI_PROFILES']='vmess-ws'
         with self.assertRaises(ValueError):runtime.preflight()
-    def test_railway_guard(self):
+    def test_railway_warns_without_blocking(self):
         os.environ['DEPLOY_MODE']='railway'
-        with self.assertRaises(ValueError):runtime.preflight()
-    def test_detect_actual_railway(self):
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO) as log:
+            state,_=runtime.preflight()
+        self.assertIn('WARNING',log.getvalue())
+        self.assertEqual(state['domain'],'panel.example.com')
+        self.assertNotIn('RAILWAY_APPROVAL_CONFIRMED',os.environ)
+    def test_detect_actual_railway_warns(self):
         os.environ['RAILWAY_ENVIRONMENT_ID']='example'
-        with self.assertRaises(ValueError):runtime.preflight()
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO) as log:
+            runtime.preflight()
+        self.assertIn('Railway deployment detected',log.getvalue())
+    def test_legacy_railway_acknowledgement_is_ignored(self):
+        os.environ['DEPLOY_MODE']='railway'
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO) as log:
+            for value in ['false','true','','not-a-boolean']:
+                os.environ['RAILWAY_APPROVAL_CONFIRMED']=value
+                state,_=runtime.preflight()
+                self.assertEqual(os.environ['RAILWAY_APPROVAL_CONFIRMED'],value)
+                self.assertNotIn('approval',json.dumps(state).lower())
+        self.assertEqual(log.getvalue().count('Railway deployment detected'),4)
+    def test_railway_restart_preserves_state_without_initial_password(self):
+        os.environ['DEPLOY_MODE']='railway'
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO):
+            runtime.preflight()
+            before=(self.path/'sabi-installation.json').read_bytes()
+            os.environ.pop('SABI_INITIAL_PASSWORD')
+            runtime.preflight()
+        self.assertEqual(before,(self.path/'sabi-installation.json').read_bytes())
+    def test_railway_public_domain_fallback(self):
+        os.environ['DEPLOY_MODE']='railway'
+        os.environ['RAILWAY_PUBLIC_DOMAIN']='sabi-test.up.railway.app'
+        os.environ.pop('PUBLIC_DOMAIN')
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO):state,_=runtime.preflight()
+        self.assertEqual(state['domain'],'sabi-test.up.railway.app')
+    def test_railway_still_requires_initial_password(self):
+        os.environ['DEPLOY_MODE']='railway';os.environ.pop('SABI_INITIAL_PASSWORD')
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO),self.assertRaises(ValueError):runtime.preflight()
+        self.assertFalse((self.path/'sabi-installation.json').exists())
+    def test_railway_still_rejects_invalid_domain(self):
+        os.environ['DEPLOY_MODE']='railway';os.environ['PUBLIC_DOMAIN']='https://bad.example.com/path'
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO),self.assertRaises(ValueError):runtime.preflight()
+    def test_railway_still_rejects_direct_profiles(self):
+        os.environ.update(DEPLOY_MODE='railway',SABI_ADVANCED='reality',SABI_DIRECT_DOMAIN='direct.example.com',SABI_REALITY_TARGET='origin.example.com:443')
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO),self.assertRaisesRegex(ValueError,'Automatic direct profiles'):runtime.preflight()
+    def test_non_railway_has_no_policy_warning(self):
+        with patch.object(runtime.sys,'stderr',new_callable=io.StringIO) as log:runtime.preflight()
+        self.assertEqual(log.getvalue(),'')
     def test_unknown_mode(self):
         os.environ['DEPLOY_MODE']='magic'
         with self.assertRaises(ValueError):runtime.preflight()

@@ -48,6 +48,8 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Startup, user, subscription and restart integration test
         run: python tests_sabi/smoke.py
+      - name: Railway environment simulation without acknowledgement gate
+        run: python tests_sabi/railway.py
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4

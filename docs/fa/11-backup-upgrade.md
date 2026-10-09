@@ -81,7 +81,7 @@ docker cp "$SOURCE/." "$RESTORE_CID:/var/lib/pasarguard/"
 ```sh
 git status --short
 git fetch --tags
-git checkout v0.2.0-alpha.1
+git checkout v0.2.0-alpha.2
 docker compose -f compose.yaml -f compose.vps.yaml up -d --build
 docker compose -f compose.yaml -f compose.vps.yaml ps
 ```

@@ -136,8 +136,12 @@ def preflight():
     DATA.mkdir(parents=True,exist_ok=True)
     mode=os.getenv('DEPLOY_MODE','docker')
     if mode not in {'docker','vps','railway'}:raise ValueError('Unknown DEPLOY_MODE')
-    if (mode=='railway' or os.getenv('RAILWAY_ENVIRONMENT_ID')) and os.getenv('RAILWAY_APPROVAL_CONFIRMED')!='true':
-        raise ValueError('Railway prohibits proxy/anonymization services. Obtain provider approval before deploying; see docs/RAILWAY.md.')
+    if mode=='railway' or os.getenv('RAILWAY_ENVIRONMENT_ID'):
+        # Provider policy is an operator responsibility, not a runtime permission check.
+        # Never invent provider approval or fail solely because an acknowledgement is absent.
+        print('[SABI-RAY] WARNING: Railway deployment detected. Review the provider Acceptable Use Policy; '
+              'technical startup does not confirm provider permission. See docs/RAILWAY.md.',
+              file=sys.stderr,flush=True)
     host=domain(os.getenv('PUBLIC_DOMAIN') or os.getenv('RAILWAY_PUBLIC_DOMAIN') or '')
     profiles=selected(os.getenv('SABI_PROFILES','vless-ws,trojan-ws,vmess-ws'))
     control=os.getenv('SABI_CONTROL_ONLY','false')=='true'

@@ -17,7 +17,7 @@
 | SABI_REALITY_SERVER_NAME | پیش‌فرض نام میزبان target | باید مطابق hostname هدف باشد |
 | PORT | 8080 برای nginx | در Compose معمولی ثابت نگه دار؛ تغییر mapping/healthcheck هم لازم است |
 | DEPLOY_MODE | docker / vps / railway | فایل Compose مربوطه آن را تعیین می‌کند |
-| RAILWAY_APPROVAL_CONFIRMED | false | فقط پس از اجازهٔ واقعی ارائه‌دهنده |
+| RAILWAY_APPROVAL_CONFIRMED | از 0.2.0-alpha.2 منسوخ و نادیده گرفته می‌شود | لازم نیست؛ حذف آن روی داده‌ها اثری ندارد. بررسی مقررات میزبان مستقل است |
 | SQLALCHEMY_DATABASE_URL | SQLite روی Volume در Dockerfile | تغییر دیتابیس یک پروژهٔ مهاجرت مستقل است |
 
 پروفایل‌های وب اختیاری `vless-upgrade` و `vless-xhttp` هستند. نصب control-only همچنان به دامنه و رمز نیاز دارد و با SABI_ADVANCED همزمان مجاز نیست.
