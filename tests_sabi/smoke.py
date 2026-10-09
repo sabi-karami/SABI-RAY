@@ -35,12 +35,19 @@ try:
     subpath=urllib.parse.urlsplit(user['subscription_url']).path
     assert subpath.startswith('/sub/')
     assert req('GET',subpath)
+    from transports import run_transport_tests
+    run_transport_tests(container,user)
     docker('restart',container,stdout=subprocess.DEVNULL)
     wait_ready()
     token=req('POST','/api/admin/token',{'username':'owner','password':password},form=True)['access_token']
     assert req('GET','/api/user/sabi_ci_user',token=token)['username']=='sabi_ci_user'
+    settings=req('GET','/api/settings',token=token)
+    assert settings['subscription']['profile_title']=='SABI-RAY'
+    assert settings['subscription']['support_url']=='https://t.me/SAHEBKARAMI'
+    from browser import run_browser
+    run_browser('http://127.0.0.1:18080','owner',password)
     print('PASS: branded dashboard, readiness including 5 listeners, owner login, core/group, user/subscription, persisted restart.')
-    print('NOT TESTED: external TLS, proxy data transfer, real ISP latency, advanced UDP/direct-TCP profiles.')
+    print('NOT TESTED: external TLS edge, real ISP latency, advanced UDP/direct-TCP profiles.')
 except Exception as error:
     # Error strings may include a subscription URL. Do not print request errors verbatim.
     print('Integration test failed:',type(error).__name__)

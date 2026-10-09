@@ -108,6 +108,10 @@ asyncio.run(main())
         for gb,days in [(10,30),(30,30),(50,30),(100,30),(200,60)]:
             name=f'SABI-RAY {gb}GB / {days}d'
             existing_or_create('/api/user_templates','templates',name,'/api/user_template',{'name':name,'data_limit':gb*1024**3,'expire_duration':days*86400,'group_ids':[group['id']],'status':'active','data_limit_reset_strategy':'no_reset'},token)
+    settings=must('GET','/api/settings',token=token)
+    subscription=settings['subscription']
+    subscription.update(url_prefix='https://'+state['domain'],profile_title='SABI-RAY',support_url='https://t.me/SAHEBKARAMI')
+    must('PUT','/api/settings',{'subscription':subscription},token)
     atomic_json(DATA/'sabi-ready.json',{'setup_complete':True,'version':1})
     print('[SABI-RAY] Initial setup complete. No demo accounts were created.',flush=True)
 

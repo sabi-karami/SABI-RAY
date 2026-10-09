@@ -381,6 +381,7 @@ export const Login: FC = () => {
           <div className="mt-6 w-full max-w-[340px]">
             <div className="flex flex-col items-center gap-2">
               <img src={resolvedTheme === 'dark' ? '/statics/favicon/logo.png' : '/statics/favicon/logo-dark.png'} alt="SABI-RAY" className="h-20 w-20 object-contain" />
+              <span dir="ltr" className="text-xs font-semibold tracking-[0.3em] text-primary">SABI-RAY</span>
               <span className="text-2xl font-semibold">{view === 'login' ? t('login.loginYourAccount') : t('setup.ownerAccess', { defaultValue: 'Owner access' })}</span>
               <span className="text-center text-muted-foreground">
                 {view === 'login'
