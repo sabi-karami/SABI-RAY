@@ -47,7 +47,7 @@ def wait_ready():
 def login():return request('POST','/api/admin/token',{'username':'owner','password':PASSWORD},form=True)['access_token']
 
 def sanitized_logs():
-    result=subprocess.run(['docker','logs','--tail','60',CONTAINER],capture_output=True,text=True)
+    result=subprocess.run(['docker','logs','--tail','1000',CONTAINER],capture_output=True,text=True)
     import re
     text=(result.stdout+result.stderr).replace(PASSWORD,'[REDACTED]')
     text=re.sub(r'/sub/[^\s"<>]+','/sub/[REDACTED]',text)
@@ -80,7 +80,7 @@ def main():
         print('NOT TESTED: actual Railway deployment, TLS edge, provider permission or real ISP connectivity.')
     except Exception as error:
         print('Railway simulation failed:',type(error).__name__)
-        print(sanitized_logs())
+        print('\n'.join(sanitized_logs().splitlines()[-60:]))
         raise SystemExit(1)
     finally:
         subprocess.run(['docker','rm','-f',CONTAINER],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
