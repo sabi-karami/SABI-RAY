@@ -1,3 +1,33 @@
+# Verified hotfix — SABI-RAY 0.2.0-alpha.2
+
+Successful PR CI: https://github.com/sabi-karami/SABI-RAY/actions/runs/37944423453
+
+Tested branch commit: `df406623bcb76ab809513b193a9d26cba130da2f`.
+Merged into main as `9362c7841bc5e21bed4ea8591155abc3069ca847` through [PR #1](https://github.com/sabi-karami/SABI-RAY/pull/1).
+
+## Fix scope
+
+The message `Startup stopped: Railway prohibits proxy/anonymization services` was emitted by SABI-RAY's own preflight guard, not a Railway API response. The acknowledgement-related exception is now a non-blocking warning. `RAILWAY_APPROVAL_CONFIRMED` is obsolete and ignored; neither a true value nor fabricated provider approval is required by the code. Provider terms remain the operator's responsibility. Password/domain/state and unsupported direct-profile checks remain in place.
+
+## Verified
+
+- 85 unit tests, Python 3.14 syntax validation, production React/Docker build and Compose configuration.
+- All existing seven data-transfer combinations, scoped reseller access checks, browser flows and restart persistence.
+- Docker simulation of `DEPLOY_MODE=railway`, `RAILWAY_ENVIRONMENT_ID` and `RAILWAY_PUBLIC_DOMAIN`.
+- Initial boot with legacy acknowledgement set to false, successful health and owner login, user creation.
+- Container recreation on the same volume with no initial password and no acknowledgement variable: owner login and user persisted; installation state bytes unchanged.
+- Warning remains visible but does not cause the old startup exception.
+
+## Not verified
+
+No live Railway service was deployed or reconfigured by this hotfix. No external Railway TLS edge, provider permission or Iranian ISP connectivity was tested. The test used Docker on GitHub Actions with simulated environment variables, not Railway. No user credentials or deployment-volume contents were accessed.
+
+Rebuild from the fixed main commit or `v0.2.0-alpha.2`; restarting an old image does not load new code. Preserve your volume and existing domain/profile settings. See [Persian update instructions](fa/10-railway.md) and [English instructions](RAILWAY.md).
+
+---
+
+## Historical 0.2.0-alpha.1 report
+
 # Verified build report — SABI-RAY 0.2.0-alpha.1
 
 Tested application commit: `c44ceb157893134ef1046bc3f3fe4338546326c4`.
