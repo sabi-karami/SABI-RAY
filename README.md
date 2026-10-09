@@ -6,7 +6,7 @@
 
 **Status: 0.2.0-alpha.1 — tested development preview, NOT production certified.**
 
-[Verified test report](docs/BUILD-REPORT.md) · [Successful CI run](https://github.com/sabi-karami/SABI-RAY/actions/runs/37939392617)
+[Verified test report](docs/BUILD-REPORT.md) · [Successful CI run](https://github.com/sabi-karami/SABI-RAY/actions/runs/37942936496)
 
 **[آموزش کامل فارسی — ۱۶ فصل](docs/fa/README.md)** · [Quick start](docs/fa/02-vps-install.md)
 
@@ -52,7 +52,8 @@ Open `https://YOUR-DOMAIN/dashboard/`. Sign in using the owner credentials you c
 
 - [Actual testing requirements](docs/TESTING.md)
 - [Backups and configuration changes](docs/MIGRATION.md)
-- Run `python -m unittest discover -s tests_sabi -v` for isolated SABI-RAY unit tests.
+- Run `python -m unittest discover -s tests_sabi -v` for isolated SABI-RAY unit tests (78 passed in this release).
+- Seven protocol/transport combinations passed actual CI transfer; OWN-scoped reseller access regression and browser flows also passed. External ISP/TLS-edge tests remain separate.
 - Inspect Actions for Docker/build/smoke outcomes. An alpha build or health check is not proof of working external connectivity.
 - Never send tokens, subscription secrets or passwords to public logs/issues.
 - No automatic updates, destructive migrations, payment handling, AI service or bot token is enabled without explicit configuration.
