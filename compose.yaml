@@ -1,0 +1,16 @@
+name: sabi-ray
+services:
+  panel:
+    build: .
+    image: sabi-ray:local
+    restart: unless-stopped
+    stop_grace_period: 20s
+    env_file: .env
+    environment:
+      DEPLOY_MODE: docker
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - sabi-data:/var/lib/pasarguard
+volumes:
+  sabi-data:

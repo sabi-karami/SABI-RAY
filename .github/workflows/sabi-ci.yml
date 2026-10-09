@@ -1,0 +1,46 @@
+name: SABI-RAY validation
+on:
+  push:
+    branches: [main, sabi-ray-alpha]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sabi-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Isolated SABI-RAY tests
+        run: python -m unittest discover -s tests_sabi -v
+      - name: Syntax validation
+        run: python -m compileall -q sabi_ray app
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build real branded dashboard and image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: sabi-ray:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Compose configuration validation
+        run: |
+          printf 'PUBLIC_DOMAIN=panel.example.test\n' > .env
+          docker compose -f compose.yaml -f compose.vps.yaml config --quiet
+          rm .env
+      - name: Startup, user, subscription and restart integration test
+        run: python tests_sabi/smoke.py

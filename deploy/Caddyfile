@@ -1,0 +1,9 @@
+{$PUBLIC_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy panel:8080
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy no-referrer
+        X-Frame-Options SAMEORIGIN
+    }
+}

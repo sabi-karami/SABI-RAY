@@ -1,0 +1,69 @@
+[
+  {
+    "name": "VLESS · WebSocket",
+    "protocol": "vless",
+    "transport": "ws",
+    "integration": "automatic",
+    "status": "alpha: client/server integration testing required"
+  },
+  {
+    "name": "Trojan · WebSocket",
+    "protocol": "trojan",
+    "transport": "ws",
+    "integration": "automatic",
+    "status": "alpha: client/server integration testing required"
+  },
+  {
+    "name": "VMess · WebSocket",
+    "protocol": "vmess",
+    "transport": "ws",
+    "integration": "automatic",
+    "status": "alpha: client/server integration testing required"
+  },
+  {
+    "name": "VLESS · HTTPUpgrade",
+    "protocol": "vless",
+    "transport": "httpupgrade",
+    "integration": "automatic",
+    "status": "alpha: client/server integration testing required"
+  },
+  {
+    "name": "VLESS · XHTTP",
+    "protocol": "vless",
+    "transport": "xhttp",
+    "integration": "automatic",
+    "status": "alpha: client/server integration testing required"
+  },
+  {
+    "name": "VLESS · REALITY · Vision",
+    "protocol": "vless",
+    "transport": "raw",
+    "integration": "explicit template",
+    "requires": "Direct TCP, authorized target, generated X25519 keys, compatible client",
+    "status": "not automatically enabled"
+  },
+  {
+    "name": "Shadowsocks",
+    "protocol": "shadowsocks",
+    "transport": "tcp/udp",
+    "integration": "upstream core editor",
+    "requires": "Explicit cipher/user management and exposed ports",
+    "status": "not automatically enabled"
+  },
+  {
+    "name": "Hysteria2",
+    "protocol": "hysteria2",
+    "transport": "quic/udp",
+    "integration": "upstream core editor",
+    "requires": "Compatible node/core version, public UDP and TLS certificate",
+    "status": "not automatically enabled"
+  },
+  {
+    "name": "WireGuard",
+    "protocol": "wireguard",
+    "transport": "udp",
+    "integration": "upstream WireGuard node",
+    "requires": "Separate capable node, public UDP, privileges/TUN as required",
+    "status": "not automatically enabled"
+  }
+]

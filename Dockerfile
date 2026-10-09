@@ -1,51 +1,25 @@
-ARG PYTHON_VERSION=3.14
+# SABI-RAY alpha. Immutable upstream runtime references; rebuilt branded dashboard.
+FROM oven/bun:1.4.2 AS dashboard
+WORKDIR /ui
+COPY dashboard/package.json dashboard/bun.lock ./
+RUN bun install --frozen-lockfile --ignore-scripts
+COPY dashboard/ ./
+RUN VITE_BASE_API=/ bun --bun run build && cp build/index.html build/404.html
 
-FROM ghcr.io/astral-sh/uv:python$PYTHON_VERSION-bookworm-slim AS builder
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    python3-dev \
-    libc6-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV UV_PYTHON_DOWNLOADS=0
-
-WORKDIR /build
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
-ADD . /build
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
-
-
-FROM python:$PYTHON_VERSION-slim-bookworm
-
-COPY --from=builder /build /code
+FROM pasarguard/node@sha256:ae7855b30726ab57d4675109dde051a1151679009afcd69fe72d34d767bae455 AS node
+FROM pasarguard/panel@sha256:30d7ac51b5822274f55cc2f506663ecf0d564efafc8776a5c3cfffd9cbfd0fce
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends nginx openssl ca-certificates curl && rm -rf /var/lib/apt/lists/* /etc/nginx/sites-enabled/default
+COPY --from=node /app/main /opt/sabi-node/main
+COPY --from=node /usr/local/bin/xray /usr/local/bin/xray
+COPY --from=node /usr/local/share/xray /usr/local/share/xray
 WORKDIR /code
-
-ENV PATH="/code/.venv/bin:$PATH"
-
-# Keep the runtime trust store explicit. Outbound notification clients use it
-# without replacing Python's process-wide SSLContext.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    && update-ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY cli_wrapper.sh /usr/bin/pasarguard-cli
-RUN chmod +x /usr/bin/pasarguard-cli
-
-COPY tui_wrapper.sh /usr/bin/pasarguard-tui
-RUN chmod +x /usr/bin/pasarguard-tui
-
-# Copy healthcheck script
-COPY healthcheck.sh /code/healthcheck.sh
-RUN chmod +x /code/healthcheck.sh
-
-RUN chmod +x /code/start.sh
-
-ENTRYPOINT ["/code/start.sh"]
+COPY app/ /code/app/
+COPY sabi_ray/ /code/sabi_ray/
+COPY --from=dashboard /ui/build/ /code/dashboard/build/
+ENV PORT=8080 UVICORN_HOST=127.0.0.1 UVICORN_PORT=8000 UVICORN_PROXY_HEADERS=True UVICORN_FORWARDED_ALLOW_IPS=127.0.0.1 \
+    SQLALCHEMY_DATABASE_URL=sqlite+aiosqlite:////var/lib/pasarguard/db.sqlite3 \
+    SUBSCRIPTION_PATH=sub XRAY_EXECUTABLE_PATH=/usr/local/bin/xray XRAY_ASSETS_PATH=/usr/local/share/xray PYTHONUNBUFFERED=1
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=300s --retries=3 CMD curl -fsS --max-time 4 http://127.0.0.1:8080/healthz || exit 1
+ENTRYPOINT ["python", "-m", "sabi_ray.runtime"]

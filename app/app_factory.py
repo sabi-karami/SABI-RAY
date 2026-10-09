@@ -351,7 +351,7 @@ def create_app() -> FastAPI:
     _warn_deprecated_role()
 
     app = FastAPI(
-        title="PasarGuardAPI",
+        title="SABI-RAY API (PasarGuard compatible)",
         description="Unified GUI Censorship Resistant Solution",
         version=__version__,
         lifespan=lifespan,

@@ -1,0 +1,5 @@
+/* SABI-RAY: quiet industrial console. Preserve upstream component contracts. */
+:root { --primary:166 64% 27%; --ring:166 64% 27%; --sidebar-primary:166 64% 27%; --radius:.7rem; }
+.dark { --background:188 30% 7%; --card:186 22% 10%; --popover:186 22% 10%; --primary:165 66% 62%; --primary-foreground:188 35% 7%; --sidebar-background:188 28% 8%; --sidebar-primary:165 66% 62%; --sidebar-primary-foreground:188 35% 7%; --border:185 16% 20%; --ring:165 66% 62%; }
+:focus-visible { outline-offset:3px; }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important;transition-duration:.01ms!important; } }

@@ -11,7 +11,7 @@ export const GithubStar = () => {
       data-color-scheme={`no-preference: ${gBtnColor}; light: ${gBtnColor}; dark: ${gBtnColor};`}
       data-size="large"
       data-show-count="true"
-      aria-label="Star PasarGuard on GitHub"
+      aria-label="Star SABI-RAY on GitHub"
     >
       Star
     </GitHubButton>

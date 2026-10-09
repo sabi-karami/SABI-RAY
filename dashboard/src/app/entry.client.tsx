@@ -1,4 +1,5 @@
 import App from '@/app/App'
+import '@/sabi-ray.css'
 import { installChunkLoadRecovery } from '@/utils/chunk-recovery'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

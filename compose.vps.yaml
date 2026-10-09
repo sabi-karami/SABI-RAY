@@ -1,0 +1,22 @@
+services:
+  panel:
+    environment:
+      DEPLOY_MODE: vps
+  edge:
+    image: caddy:2.10.2
+    restart: unless-stopped
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:?Set PUBLIC_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      panel:
+        condition: service_healthy
+volumes:
+  caddy-data:
+  caddy-config:

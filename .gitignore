@@ -172,3 +172,12 @@ deadlock-analysis.md
 # AI
 .AGENT
 graphify-out
+
+# SABI-RAY deployment secrets and local artifacts
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*.sqlite*
+backups/
